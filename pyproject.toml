@@ -23,7 +23,6 @@ ipykernel = "^6.4.2"
 black = "^21.9b0"
 flake8 = "^4.0.1"
 isort = "^5.9.3"
-jupyter-console = "^6.4.0"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
