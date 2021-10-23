@@ -1,7 +1,6 @@
-from pydantic import BaseModel
-from typing import Dict
 from uuid import UUID
-from jupyter_client.connect import KernelConnectionInfo
+
+from pydantic import BaseModel
 
 
 class Kernel(BaseModel):

@@ -1,17 +1,21 @@
-from fastapi import APIRouter, status, HTTPException, Response, Depends
 from functools import lru_cache
-from ..constants import ROOT_DIR
 from pathlib import Path
-from uuid import uuid4
-from jupyter_client.provisioning import KernelProvisionerFactory, KernelProvisionerBase
 from typing import Dict, List
-from jupyter_client.kernelspec import find_kernel_specs, get_kernel_spec
-from ..models.kernels import Kernel
+from uuid import uuid4
+
+from fastapi import APIRouter, Depends, HTTPException, Response, status
 from jupyter_client.connect import LocalPortCache, write_connection_file
+from jupyter_client.kernelspec import find_kernel_specs, get_kernel_spec
+from jupyter_client.provisioning import (KernelProvisionerBase,
+                                         KernelProvisionerFactory)
+
+from ..constants import ROOT_DIR
+from ..models.kernels import Kernel
 
 router = APIRouter()
 
 kernel_factory = KernelProvisionerFactory()
+
 
 @lru_cache
 def connection_file_dir() -> Path:
@@ -28,11 +32,14 @@ def kernel_spec():
 
 KERNEL_CACHE: Dict[str, KernelProvisionerBase] = {}
 
+
 @router.post("/kernels", status_code=status.HTTP_201_CREATED, response_model=Kernel)
 async def create_kernel(connection_file_dir=Depends(connection_file_dir)):
     # https://github.com/jupyter/jupyter_client/blob/master/jupyter_client/provisioning/factory.py
     kernel_id = str(uuid4())
-    provisioner = kernel_factory.create_provisioner_instance(kernel_id, kernel_spec(), None)
+    provisioner = kernel_factory.create_provisioner_instance(
+        kernel_id, kernel_spec(), None
+    )
     KERNEL_CACHE[kernel_id] = provisioner
     kwargs = await provisioner.pre_launch(independent=True)
     kernel_cmd = kwargs.pop("cmd")
@@ -59,9 +66,13 @@ async def create_kernel(connection_file_dir=Depends(connection_file_dir)):
 @router.get("/kernels", status_code=status.HTTP_200_OK, response_model=List[Kernel])
 async def get_kernels(connection_file_dir=Depends(connection_file_dir)):
     return [
-        Kernel(id=id, connection_info_file=str((connection_file_dir / f"{id}.json").resolve()))
+        Kernel(
+            id=id,
+            connection_info_file=str((connection_file_dir / f"{id}.json").resolve()),
+        )
         for id, kernel in KERNEL_CACHE.items()
     ]
+
 
 @router.get("/kernels/{id}", status_code=status.HTTP_200_OK, response_model=Kernel)
 async def get_kernel(id: str, connection_file_dir=Depends(connection_file_dir)):
@@ -69,7 +80,10 @@ async def get_kernel(id: str, connection_file_dir=Depends(connection_file_dir)):
     if kernel is None:
         return HTTPException(status_code=status.HTTP_404_NOT_FOUND)
 
-    return Kernel(id=id, connection_info_file=str((connection_file_dir / f"{id}.json").resolve()))
+    return Kernel(
+        id=id, connection_info_file=str((connection_file_dir / f"{id}.json").resolve())
+    )
+
 
 @router.delete("/kernels/{id}", status_code=status.HTTP_204_NO_CONTENT)
 async def delete_kernel(id: str, connection_file_dir=Depends(connection_file_dir)):
