@@ -16,11 +16,14 @@ uvicorn = "^0.15.0"
 SQLAlchemy = "^1.4.26"
 requests = "^2.26.0"
 pytest = "^6.2.5"
+jupyter-client = "^7.0.6"
+ipykernel = "^6.4.2"
 
 [tool.poetry.dev-dependencies]
 black = "^21.9b0"
 flake8 = "^4.0.1"
 isort = "^5.9.3"
+jupyter-console = "^6.4.0"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]

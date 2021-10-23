@@ -139,3 +139,4 @@ cython_debug/
 
 sandbox.db
 .vscode
+.connection-files

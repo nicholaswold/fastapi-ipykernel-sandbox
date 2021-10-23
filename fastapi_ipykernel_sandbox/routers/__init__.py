@@ -1,3 +1,4 @@
 from .ping import router as PingRouter
+from .kernels import router as KernelsRouter
 
-routers = [PingRouter]
+routers = [PingRouter, KernelsRouter]

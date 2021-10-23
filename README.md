@@ -15,6 +15,7 @@ virtualenv, it will detect that and treat the environment as its own.
 1. Ensure that you have Python 3.9.7 installed
 1. `pip install poetry`
 1. `poetry install`
+1. `python -m ipykernel install --user`
 
 
 ## Running the Sandbox
