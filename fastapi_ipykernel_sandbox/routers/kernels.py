@@ -41,7 +41,10 @@ async def create_kernel(connection_file_dir=Depends(connection_file_dir)):
         kernel_id, kernel_spec(), None
     )
     KERNEL_CACHE[kernel_id] = provisioner
-    kwargs = await provisioner.pre_launch(independent=True)
+    # Turning independent=True will mean that kernels will outlive the parent process
+    # Keeping this False means that any ipykernel processes will be collapsed after the API
+    # server is killed.
+    kwargs = await provisioner.pre_launch(independent=False)
     kernel_cmd = kwargs.pop("cmd")
     ip = "0.0.0.0"
     lpc = LocalPortCache.instance()
@@ -78,7 +81,7 @@ async def get_kernels(connection_file_dir=Depends(connection_file_dir)):
 async def get_kernel(id: str, connection_file_dir=Depends(connection_file_dir)):
     kernel = KERNEL_CACHE.get(id)
     if kernel is None:
-        return HTTPException(status_code=status.HTTP_404_NOT_FOUND)
+        return Response(status_code=status.HTTP_404_NOT_FOUND)
 
     return Kernel(
         id=id, connection_info_file=str((connection_file_dir / f"{id}.json").resolve())

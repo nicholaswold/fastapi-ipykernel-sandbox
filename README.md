@@ -33,3 +33,5 @@ losing any important data!
 
 To actually start the API server, you can run `poetry run sandbox`. That will start the web server,
 listening on port 8000.
+
+To run unit tests you can run `poetry run pytest`.
